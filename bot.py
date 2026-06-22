@@ -11,7 +11,7 @@ from aiogram.types import Message
 
 TOKEN = os.getenv("TOKEN")
 
-# ваш Telegram ID владельца
+# Telegram ID владельца
 OWNER_ID = 431939187
 
 
@@ -28,100 +28,183 @@ class OrderForm(StatesGroup):
     address = State()
 
 
+# Старт
 @dp.message(CommandStart())
 async def start(message: Message, state: FSMContext):
+
+    await state.clear()
+
     await message.answer(
-        "🌹السلام عليكم ورحمة الله وبركاته
-🌹Ассаляму алейкум уа рахматуЛлахи уа баракятуху🌹
-Мир вам и милость Аллаха и Его благословение!🌸 Для оформления заказа ответьте на вопросы.\n\n"
+        "Ассаляму алейкум уа рахматуЛлахи уа баракятуху!🌸 👋\n\n"
+        "Для оформления заказа ответьте на несколько вопросов.\n\n"
         "Введите вашу фамилию:"
     )
+
     await state.set_state(OrderForm.surname)
 
 
+# Фамилия
 @dp.message(OrderForm.surname)
 async def surname(message: Message, state: FSMContext):
-    await state.update_data(surname=message.text)
 
-    await message.answer("Введите имя:")
+    await state.update_data(
+        surname=message.text
+    )
+
+    await message.answer(
+        "Введите имя:"
+    )
+
     await state.set_state(OrderForm.name)
 
 
+
+# Имя
 @dp.message(OrderForm.name)
 async def name(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
 
-    await message.answer("Введите отчество:")
+    await state.update_data(
+        name=message.text
+    )
+
+    await message.answer(
+        "Введите отчество:"
+    )
+
     await state.set_state(OrderForm.patronymic)
 
 
+
+# Отчество
 @dp.message(OrderForm.patronymic)
 async def patronymic(message: Message, state: FSMContext):
-    await state.update_data(patronymic=message.text)
 
-    await message.answer("Введите ваш рост в см:")
+    await state.update_data(
+        patronymic=message.text
+    )
+
+    await message.answer(
+        "Введите рост в см:"
+    )
+
     await state.set_state(OrderForm.size)
 
 
+
+# Размер
 @dp.message(OrderForm.size)
 async def size(message: Message, state: FSMContext):
-    await state.update_data(size=message.text)
 
-    await message.answer("Введите номер телефона для связи:")
+    await state.update_data(
+        size=message.text
+    )
+
+    await message.answer(
+        "Введите номер телефона для связи:"
+    )
+
     await state.set_state(OrderForm.phone)
 
 
+
+# Телефон
 @dp.message(OrderForm.phone)
 async def phone(message: Message, state: FSMContext):
-    await state.update_data(phone=message.text)
 
-    await message.answer("Доставка осуществляется через пункты выдачи вайлдберрис и озон 
-Пожалуйста напишите адрес вашего пункта выдачи и привязанный номер телефона  
-БаракаЛлаху фикум! ")
+    await state.update_data(
+        phone=message.text
+    )
+
+    await message.answer(
+        "Доставка осуществляется через пункты выдачи вайлдберрис и озон🌸 Пожалуйста напишите адрес вашего пункта выдачи и привязанный номер телефона🌸  БаракаЛлаху фикум! :"
+    )
+
     await state.set_state(OrderForm.address)
 
 
+
+# Адрес и отправка заказа
 @dp.message(OrderForm.address)
 async def address(message: Message, state: FSMContext):
 
-    await state.update_data(address=message.text)
+    await state.update_data(
+        address=message.text
+    )
+
 
     data = await state.get_data()
+
+
+    # ссылка на клиента
+    if message.from_user.username:
+
+        client_link = (
+            f"https://t.me/{message.from_user.username}"
+        )
+
+    else:
+
+        client_link = (
+            f"tg://user?id={message.from_user.id}"
+        )
+
 
     order = f"""
 🛒 НОВЫЙ ЗАКАЗ
 
-Фамилия: {data['surname']}
-Имя: {data['name']}
-Отчество: {data['patronymic']}
+👤 Чат с клиентом:
+{client_link}
 
-Размер одежды: {data['size']}
 
-Телефон:
+📌 Данные клиента:
+
+Фамилия:
+{data['surname']}
+
+Имя:
+{data['name']}
+
+Отчество:
+{data['patronymic']}
+
+
+👕 Размер одежды:
+{data['size']}
+
+
+📞 Телефон:
 {data['phone']}
 
-Адрес доставки:
+
+📦 Адрес доставки:
 {data['address']}
 """
+
 
     await bot.send_message(
         OWNER_ID,
         order
     )
 
+
     await message.answer(
-        "جزاك اللهُ خيرًا🌸
-Джазаки Аллаху хайран🌸
-Да воздаст вам Аллах благом🌸 ваш заказ принят"
+        "Джазаки Аллаху хайран!🌸 Ваш заказ принят ✅\n\n"
+        "Мы скоро свяжемся с вами."
     )
+
 
     await state.clear()
 
 
+
 async def main():
-    print("Бот запущен и ждёт заказов")
+
+    print("Бот запущен и принимает заказы")
+
     await dp.start_polling(bot)
 
 
+
 if name == "__main__":
+
     asyncio.run(main())
