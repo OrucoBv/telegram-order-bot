@@ -12,7 +12,7 @@ from aiogram.types import Message
 TOKEN = os.getenv("TOKEN")
 
 # ваш Telegram ID владельца
-OWNER_ID = 5496034964
+OWNER_ID = 431939187
 
 
 bot = Bot(token=TOKEN)
@@ -31,7 +31,9 @@ class OrderForm(StatesGroup):
 @dp.message(CommandStart())
 async def start(message: Message, state: FSMContext):
     await message.answer(
-        "Здравствуйте! Для оформления заказа ответьте на вопросы.\n\n"
+        "🌹السلام عليكم ورحمة الله وبركاته
+🌹Ассаляму алейкум уа рахматуЛлахи уа баракятуху🌹
+Мир вам и милость Аллаха и Его благословение!🌸 Для оформления заказа ответьте на вопросы.\n\n"
         "Введите вашу фамилию:"
     )
     await state.set_state(OrderForm.surname)
@@ -57,7 +59,7 @@ async def name(message: Message, state: FSMContext):
 async def patronymic(message: Message, state: FSMContext):
     await state.update_data(patronymic=message.text)
 
-    await message.answer("Введите размер одежды:")
+    await message.answer("Введите ваш рост в см:")
     await state.set_state(OrderForm.size)
 
 
@@ -65,7 +67,7 @@ async def patronymic(message: Message, state: FSMContext):
 async def size(message: Message, state: FSMContext):
     await state.update_data(size=message.text)
 
-    await message.answer("Введите номер телефона:")
+    await message.answer("Введите номер телефона для связи:")
     await state.set_state(OrderForm.phone)
 
 
@@ -73,7 +75,9 @@ async def size(message: Message, state: FSMContext):
 async def phone(message: Message, state: FSMContext):
     await state.update_data(phone=message.text)
 
-    await message.answer("Введите адрес доставки:")
+    await message.answer("Доставка осуществляется через пункты выдачи вайлдберрис и озон 
+Пожалуйста напишите адрес вашего пункта выдачи и привязанный номер телефона  
+БаракаЛлаху фикум! ")
     await state.set_state(OrderForm.address)
 
 
@@ -106,7 +110,9 @@ async def address(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        "Спасибо! Ваш заказ принят ✅"
+        "جزاك اللهُ خيرًا🌸
+Джазаки Аллаху хайран🌸
+Да воздаст вам Аллах благом🌸 ваш заказ принят"
     )
 
     await state.clear()
